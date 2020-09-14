@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <h1>회원가입</h1>
+    <hr>
+    
+    <form action='/create' method="POST">
+        <table>
+            <tr>
+                <td><input type="text" name="user_id" placeholder="ID"></td>
+            </tr>
+            <tr>
+                <td><input type="password" name="user_pw" placeholder="PW"></td>
+            </tr>
+            <tr>
+                <td><input type="text" name="user_name" placeholder="name"></td>
+            </tr>
+        </table>
+        <input type="submit" value="가입하기">
+    </form>
+
+    <table>
+        <% for(let data of result) { %>
+            <tr>
+                <td><%= data.USER_ID %></td>
+                <td><%= data.USER_PW %></td>
+                <td><%= data.USER_NAME %></td>
+            </tr>
+        <% } %>
+    </table>
+</body>
+</html>
