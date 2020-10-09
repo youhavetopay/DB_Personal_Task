@@ -2,6 +2,9 @@ var express = require('express');
 const session = require('express-session');
 var router = express.Router();
 const mysql = require('mysql');
+const users = require('../controller/users')
+
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
@@ -25,6 +28,13 @@ router.get('/login', function(req, res, next){
   
 
 });
+
+router.get('/logout', function(req, res, next){
+  req.session.destroy();
+  res.clearCookie('sid');
+
+  res.redirect('/');
+})
 
 router.post('/login', function(req, res, next){
 
@@ -51,10 +61,11 @@ router.post('/login', function(req, res, next){
           };
 
         }
-        res.redirect("/users/login");
+        res.redirect("/");
         
       }
     })
 })
+
 
 module.exports = router;

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1><%= name %>의 마이페이지</h1>
+
+    <h3>카드정보</h3>
+    <table>
+
+        <%for(let data of card_result){%>
+          <tr>
+            <td>카드번호:<%= data.card_num%>&nbsp;</td>
+            <td>카드종류:<%= data.card_kind%>&nbsp;</td>
+            <td>카드 유효기간:<%= data.card_valldity%></td>
+          </tr>
+        <%}%>
+  
+      </table>
+      <br>
+      <br>
+    <h3>배송지정보</h3>
+    <table>
+
+        <%for(let data2 of adr_result){%>
+          <tr>
+            <td>메인주소:<%= data2.main_adr%>&nbsp;</td>
+            <td>세부주소:<%= data2.detil_adr%>&nbsp;</td>
+            <td>우편번호:<%= data2.post_num%></td>
+          </tr>
+        <%}%>
+  
+      </table>
+      <br>
+      <br>
+    <h3>주문목록</h3>
+
+</body>
+</html>

@@ -9,8 +9,36 @@
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
 
-    <a href="http://localhost:3000/create">회원가입</a>
+    <a href="/create">회원가입</a>
     <br>
-    <a href="http://localhost:3000/users/login">로그인</a>
+    <% if(session){%>
+      <a href="/users/logout">로그아웃</a>
+      <br>
+      <a href="/mypage">마이페이지</a>
+      <p><%= name %></p>
+    <%} else{%>
+      <a href="/users/login">로그인</a>
+    <%}%>
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <h2>책 목록</h2>
+    <table>
+
+      <%for(let data of result){%>
+        <tr>
+          <td>책이름:<%= data.book_name%></td>
+          <td>수량:<%= data.book_stock%></td>
+          <td>가격:<%= data.book_price%></td>
+        </tr>
+      <%}%>
+
+    </table>
+
+
+
   </body>
 </html>
