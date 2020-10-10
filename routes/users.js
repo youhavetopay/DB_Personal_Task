@@ -15,9 +15,12 @@ let client = mysql.createConnection({
   user: 'root',
   host:'localhost',
   password: '',
-  database: 'db'
+  database: 'db',
+  multipleStatements:true
 });
 
+
+// 로그인 렌더링
 router.get('/login', function(req, res, next){
   if(req.session.user){
     res.render('users/login', {session: true});
@@ -29,6 +32,8 @@ router.get('/login', function(req, res, next){
 
 });
 
+
+// 로그아웃
 router.get('/logout', function(req, res, next){
   req.session.destroy();
   res.clearCookie('sid');
@@ -36,6 +41,8 @@ router.get('/logout', function(req, res, next){
   res.redirect('/');
 })
 
+
+// 로그인 확인
 router.post('/login', function(req, res, next){
 
   var user_id = req.body.user_id

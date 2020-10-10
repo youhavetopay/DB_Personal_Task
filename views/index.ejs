@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
+    <title>IZ*ONE</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
@@ -11,12 +11,15 @@
 
     <a href="/create">회원가입</a>
     <br>
+    <br>
     <% if(session){%>
       <a href="/users/logout">로그아웃</a>
       <br>
-      <a href="/mypage">마이페이지</a>
+      <br>
+      <a href="/mypage">마이페이지&nbsp;&nbsp;</a><a href="">장바구니</a>
       <p><%= name %></p>
     <%} else{%>
+      <br>
       <a href="/users/login">로그인</a>
     <%}%>
 

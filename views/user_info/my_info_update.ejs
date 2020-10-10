@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보수정</title>
+
+
+
+</head>
+<body>
+
+    <% if(title == 'card') {%>
+        <h3>카드정보 수정</h3>
+
+        <% for(let card of card_result2) {%>
+        <form action='/mypage/card_update/<%= card.card_num%>' method="POST">
+            <table>
+                <tr>
+                    <td>카드번호: <input type="text" name="card_num" value="<%= card.card_num%>"></td>
+                </tr>
+                <tr>
+                    <td>카드종류: <select name="card_kind">
+                        <option value="체크카드" selected="selected">체크카드</option>
+                        <option value="신용카드">신용카드</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td>유효기간: <input type="text" name="card_valldity" value="<%= card.card_valldity%>"></td>
+                </tr>
+            </table>
+            <input type="submit" value="수정">
+        </form>
+        <% }%>
+    <%} else{ %>
+        <h3>주소정보 수정</h3>
+        <% for(let adr of adr_result2) {%>
+        <form action='/mypage/adr_update/<%= adr.adr_id%>' method="POST">
+            <table>
+                <tr>
+                    <td>메인주소: <input type="text" name="main_adr" value="<%= adr.main_adr%>"></td>
+                </tr>
+                <tr>
+                    <td>상세주소: <input type="text" name="detil_adr" value="<%= adr.detil_adr%>"></td>
+                </tr>
+                <tr>
+                    <td>우편번호: <input type="text" name="post_num" value="<%= adr.post_num%>"></td>
+                </tr>
+            </table>
+            <input type="submit" value="수정">
+        </form>
+        <% }%>
+    <%}%>
+    
+</body>
+</html>

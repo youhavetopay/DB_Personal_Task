@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보 등록</title>
+
+
+</head>
+<body>
+    <% if(title == 'card') {%>
+        <h3>카드등록</h3>
+        <form action='/mypage/card_add' method="POST">
+            <table>
+                <tr>
+                    <td>카드번호: <input type="text" name="card_num" placeholder="카드번호"></td>
+                </tr>
+                <tr>
+                    <td>카드종류: <select name="card_kind">
+                        <option value="체크카드" selected="selected">체크카드</option>
+                        <option value="신용카드">신용카드</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td>유효기간: <input type="text" name="card_valldity" placeholder="유효기간"></td>
+                </tr>
+            </table>
+            <input type="submit" value="등록">
+        </form>
+    <%} else{ %>
+        <h3>주소등록</h3>
+        <form action='/mypage/adr_add' method="POST">
+            <table>
+                <tr>
+                    <td>메인주소: <input type="text" name="main_adr" placeholder="메인주소"></td>
+                </tr>
+                <tr>
+                    <td>상세주소: <input type="text" name="detil_adr" placeholder="상세주소"></td>
+                </tr>
+                <tr>
+                    <td>우편번호: <input type="text" name="post_num" placeholder="우편번호"></td>
+                </tr>
+            </table>
+            <input type="submit" value="등록">
+        </form>
+    <%}%>
+
+
+    
+</body>
+</html>

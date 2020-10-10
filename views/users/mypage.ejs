@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>마이페이지</title>
+
+   
+
 </head>
 <body>
     <h1><%= name %>의 마이페이지</h1>
 
-    <h3>카드정보</h3>
+    <span>카드정보&nbsp;&nbsp;</span> <button><a href="/mypage/insert/card">카드등록</a></button>
+    <br>
     <table>
 
         <%for(let data of card_result){%>
@@ -16,13 +20,18 @@
             <td>카드번호:<%= data.card_num%>&nbsp;</td>
             <td>카드종류:<%= data.card_kind%>&nbsp;</td>
             <td>카드 유효기간:<%= data.card_valldity%></td>
+            <td><button><a href="/mypage/card_edit/<%= data.card_num %>">수정하기</a></button></td>
+            <form action="/mypage/card_delete/<%= data.card_num %>" method="POST">
+              <td><input type="submit" value="삭제하기"></input></td>
+            </form>
           </tr>
         <%}%>
   
       </table>
       <br>
       <br>
-    <h3>배송지정보</h3>
+    <span>배송지정보&nbsp;&nbsp;</span> <button><a href="/mypage/insert/adr">주소등록</a></button>
+    <br>
     <table>
 
         <%for(let data2 of adr_result){%>
@@ -30,6 +39,11 @@
             <td>메인주소:<%= data2.main_adr%>&nbsp;</td>
             <td>세부주소:<%= data2.detil_adr%>&nbsp;</td>
             <td>우편번호:<%= data2.post_num%></td>
+            <td><button><a href="/mypage/adr_edit/<%= data2.adr_id %>">수정하기</a></button></td>
+            <form action="/mypage/adr_delete/<%= data2.adr_id %>" method="POST">
+              <td><input type="submit" value="삭제하기"></input></td>
+            </form>
+
           </tr>
         <%}%>
   

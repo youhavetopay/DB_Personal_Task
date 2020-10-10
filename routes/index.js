@@ -12,7 +12,8 @@ let client = mysql.createConnection({
   user: 'root',
   host: 'localhost',
   password: '',
-  database: 'db'
+  database: 'db',
+  multipleStatements:true
 });
 
 /* GET home page. */
@@ -35,6 +36,7 @@ router.get('/', function (req, res, next) {
   });
 });
 
+// 회원가입 렌더링
 router.get('/create', function (req, res, next) {
   client.query("SELECT * FROM db.user;", function (err, result, fields) {
     if (err) {
@@ -50,6 +52,7 @@ router.get('/create', function (req, res, next) {
 });
 
 
+// 회원가입
 router.post('/create', function (req, res, next) {
   var body = req.body;
 
