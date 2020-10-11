@@ -285,7 +285,7 @@ router.post('/adr_update/:adr_id', function(req, res, next){
 router.get('/order_detail/:orderId', function(req,res,next){
   var orderId = req.params.orderId;
 
-  client.query('select * from order_list where order_id',[
+  client.query('select * from order_list where order_id = ?',[
     orderId
   ], function(err, result_order, fields){
     if(err){
@@ -311,7 +311,8 @@ router.get('/order_detail/:orderId', function(req,res,next){
             else{
               res.render('order/orderDetail', {
                 result_order : result_order,
-                result_book_img: result_book_img
+                result_book_img: result_book_img,
+                result_book_code: result_book_code
               });
             }
           });

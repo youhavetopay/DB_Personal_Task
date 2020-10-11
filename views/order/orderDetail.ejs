@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상세주문정보</title>
+</head>
+<body>
+    <h3>상세주문정보</h3>
+
+    <% for(let data of result_book_img) {%>
+            <img src="/book_img/<%=data.book_img_path%>" alt="" width="200" height="200">
+    <%}%>
+    
+    <p>주문권수<%= result_book_code[0].book_count%></p>
+
+    <table>
+
+        <% for(let data2 of result_order) { %>
+            <tr>
+                <td>주문번호: <%= data2.order_id%></td>
+            </tr>
+            <tr>
+                <td>주문자: <%= data2.user_user_id%></td>
+            </tr>
+            <tr>
+                <td>주문시간:<%= data2.order_day%></td>
+            </tr>
+            <tr>
+                <td>주문금액: <%= data2.order_total_money%></td>
+            </tr>
+            <tr>
+                <td>결제카드번호: <%= data2.order_card_num%></td><td>카드종류: <%= data2.order_card_kind%></td><td>유효기간: <%= data2.order_card_valdity%></td>
+            </tr>
+            <tr>
+                <td>우편번호: <%= data2.order_post_num%></td><td>메인주소: <%= data2.order_main_adr%></td><td>상세주소: <%= data2.order_detail_adr%></td>
+            </tr>
+        <%}%>
+
+    </table>
+
+</body>
+</html>
