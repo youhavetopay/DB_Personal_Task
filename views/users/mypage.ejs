@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
 
-   
 
 </head>
 <body>
@@ -51,6 +50,19 @@
       <br>
       <br>
     <h3>주문목록</h3>
+    <table>
+      <% for(let data3 of order_result) {%>
+        <tr>
+          <td>주문번호: <%= data3.order_id%></td>
+          <td>결제금액: <%= data3.order_total_money%></td>
+          <td>결제일자: <%= data3.order_day%></td>
+          <td><button><a href="/order_detail/<%= data3.order_id%>">상세보기</a></button></td>
+            <form action="" method="POST">
+              <td><input type="submit" value="주문취소"></input></td>
+            </form>
+        </tr>
+      <%}%>
+    </table>
 
 </body>
 </html>

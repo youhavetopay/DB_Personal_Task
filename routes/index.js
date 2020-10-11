@@ -17,9 +17,11 @@ let client = mysql.createConnection({
 });
 
 /* GET home page. */
+
+// 메인페이지 렌더링
 router.get('/', function (req, res, next) {
 
-  client.query("select book_name, book_stock, book_price from db.book_list;", function (err, result, fields) {
+  client.query("select * from db.book_list;", function (err, result, fields) {
     if (err) {
       console.log(err);
       console.log("쿼리 오류");

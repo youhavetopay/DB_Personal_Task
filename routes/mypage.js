@@ -16,8 +16,10 @@ let client = mysql.createConnection({
 // mypage 렌더링
 router.get('/', function (req, res, next) {
 
-  var card_sql = 'select * from card_info where user_user_id = \'' + req.session.user.id + '\';';
-  var adr_sql = 'select * from db.address_info where adr_id in (select address_info_adr_id from db.user_has_address_info where user_user_id = \'' + req.session.user.id + '\');';
+  var userId = req.session.user.id;
+
+  var card_sql = 'select * from card_info where user_user_id = \'' + userId + '\';';
+  var adr_sql = 'select * from db.address_info where adr_id in (select address_info_adr_id from db.user_has_address_info where user_user_id = \'' + userId + '\');';
   client.query(card_sql + adr_sql, function (err, results, field) {
 
 
@@ -30,7 +32,18 @@ router.get('/', function (req, res, next) {
       console.log(req.session.user.name);
       var card_result = results[0];
       var adr_result = results[1];
-      res.render('users/mypage', { name: req.session.user.name, card_result: card_result, adr_result: adr_result });
+      client.query('select * from order_list where user_user_id = ?',[
+        userId
+      ], function(err, order_result, field){
+        if(err){
+          console.log(err);
+          res.redirect('/');
+        }
+        else{
+          res.render('users/mypage', { name: req.session.user.name, card_result: card_result, adr_result: adr_result, order_result:order_result });
+        }
+      })
+      
     }
   })
 
@@ -263,6 +276,49 @@ router.post('/adr_update/:adr_id', function(req, res, next){
       res.redirect('/mypage');
     }
   })
+
+});
+
+
+
+// 주문 상세정보 렌더링
+router.get('/order_detail/:orderId', function(req,res,next){
+  var orderId = req.params.orderId;
+
+  client.query('select * from order_list where order_id',[
+    orderId
+  ], function(err, result_order, fields){
+    if(err){
+      console.log(err);
+      res.redirect('/mypage');
+    }
+    else{
+      client.query('select * from order_list_has_book_list where order_list_order_id = ?',[
+        orderId
+      ], function(err, result_book_code, fields){
+        if(err){
+          console.log(err);
+          res.redirect('/mypage');
+        }
+        else{
+          client.query('select * from book_list where book_id = ?',[
+            result_book_code[0].book_list_book_id
+          ], function(err, result_book_img, fields){
+            if(err){
+              console.log(err);
+              res.redirect('/mypage');
+            }
+            else{
+              res.render('order/orderDetail', {
+                result_order : result_order,
+                result_book_img: result_book_img
+              });
+            }
+          });
+        }
+      });
+    }
+  });
 
 });
 

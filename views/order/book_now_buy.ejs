@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>바로구매</title>
+
+</head>
+<body>
+
+    <h3>책 상세정보</h3>
+    <% for(let bookdata of bookResult){%>
+        <img src="/book_img/<%=bookdata.book_img_path%>" alt="" width="300" height="300">
+        <table>
+            <tr>
+                <td>책이름: <%= bookdata.book_name%></td>
+            </tr>
+            <tr>
+                <td>남은수량: <%= bookdata.book_stock%></td>
+            </tr>
+            <tr>
+                <td>가격: <%= bookdata.book_price%></td>
+            </tr>
+        </table>
+    <%}%>
+
+    <h3>주문정보</h3>
+
+    <form action="/book/order/<%= bookResult[0].book_id %>/<%= bookResult[0].book_price%>/<%= bookResult[0].book_stock%>" method="POST">
+
+        <table>
+            <tr>
+                <td>수량: <select name="select_book_count" id="book_count" onchange="changeCount()">
+                    <% for(let bookdata of bookResult){ %>
+                        <%for(var i=1; i<=bookdata.book_stock; i++){%>
+                            <option value="<%= i%>"><%= i%></option>
+                        <%}%>
+                    <%}%>
+                </select></td>
+            </tr>
+
+            <tr>
+                <td>결제카드: <select name="select_card">
+                    <% for(let cardData of cardResult) {%>
+                        <option value="<%= cardData.card_num%>">카드번호:<%= cardData.card_num%>  카드종류:<%= cardData.card_kind%>  유효기한:<%= cardData.card_valldity%></option>
+                    <%}%>
+                </select></td>
+            </tr>
+           
+            <tr>
+                <td>배송지: <select name="select_adr">
+                    <% for(let adrData of adrResult) {%>
+                        <option value="<%=adrData.adr_id%>">우편번호:<%= adrData.post_num%>  메인주소:<%= adrData.main_adr%>  상세주소:<%= adrData.detil_adr%></option>
+                    <%}%>
+                </select></td>
+            </tr>
+            <tr>
+               
+            </tr>
+
+        </table>
+        <input type="submit" value="주문">
+    </form>
+
+    
+    
+</body>
+</html>
