@@ -48,6 +48,11 @@ router.post('/login', function(req, res, next){
   var user_id = req.body.user_id
   var user_pw = req.body.user_pw;
 
+  if(user_id == '' || user_pw== ''){ //입력안하면 안됨
+    console.log('하나 빼 먹음');
+    res.redirect('/')
+  }
+  else{
     client.query('select * from db.user where user_id= ? and user_pw = ?',[
       user_id, user_pw
     ], function(err, result){
@@ -72,6 +77,7 @@ router.post('/login', function(req, res, next){
         
       }
     })
+  }
 })
 
 

@@ -47,8 +47,8 @@
       <td><button><a href="/book/buy_now/<%= data.book_id%>">바로구매</a></button></td>
       <td><button><a href="">장바구니담기</a></button></td>
       <% if(name == '관리자'){%>
-      <td><button><a href="">수정하기</a></button></td>
-      <form action="" method="POST">
+      <td><button><a href="/book/update/<%= data.book_id%>">수정하기</a></button></td>
+      <form action="/book/delete/<%= data.book_id%>" method="POST">
         <td><input type="submit" value="삭제하기"></input></td>
       </form>
       <%}%>

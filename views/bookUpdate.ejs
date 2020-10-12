@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>책정보수정</title>
+</head>
+<body>
+    <h1>책 정보 수정</h1>
+
+    <table>
+        <h3>현재 책 정보</h3>
+        <% for(let data of book_info){%>
+            <tr>
+                <td rowspan="2"><img src="/book_img/<%= data.book_img_path%>" alt="" width="150" height="150">&nbsp;&nbsp;</td><td>책이름: <%= data.book_name%>&nbsp;&nbsp;</td><td>재고량: <%= data.book_stock%>권</td>
+            </tr>
+            <tr>
+                <td>가격:<%= data.book_price%> 원</td>
+            </tr>
+        <%}%>
+    </table>
+
+    <br>
+    <br>
+    <br>
+
+    <form action="/book/update/<%= book_info[0].book_id%>" method="post">
+        <table>
+            <h3>수정 할 정보</h3>
+            <% for(let data2 of book_info){%>
+            <tr>
+                <td>책이름: <input type="text" name="name" value="<%= data2.book_name%>"></td>
+            </tr>
+            <tr>
+                <td>재고량: <input type="text" name="stock" value="<%= data2.book_stock%>">권</td>
+            </tr>
+            <tr>
+                <td>가격: <input type="text" name="price" value="<%= data2.book_price%>">원</td>
+            </tr>
+            <%}%>
+        </table>
+        <input type="submit" value="수정">
+    </form>
+</body>
+</html>

@@ -58,18 +58,25 @@ router.get('/create', function (req, res, next) {
 router.post('/create', function (req, res, next) {
   var body = req.body;
 
-  client.query("insert into db.user (USER_ID, USER_PW, USER_NAME) values(?,?,?)", [
-    body.user_id, body.user_pw, body.user_name
-  ], function (err) {
-    if (err) {
-      console.log(err);
-      console.log("쿼리 오류");
-    }
-    else {
-      console.log("회원가입 성공");
-      res.redirect("/create");
-    }
-  });
+  if(body.user_id == '' || body.user_pw == '' || body.user_name== ''){
+    //하나라도 안적으면 안됨
+    console.log("하나 빼먹음")
+    res.redirect('/')
+  }
+  else{
+    client.query("insert into db.user (USER_ID, USER_PW, USER_NAME) values(?,?,?)", [
+      body.user_id, body.user_pw, body.user_name
+    ], function (err) {
+      if (err) {
+        console.log(err);
+        console.log("쿼리 오류");
+      }
+      else {
+        console.log("회원가입 성공");
+        res.redirect("/create");
+      }
+    });
+  }
 });
 
 

@@ -6,34 +6,52 @@
     <title>상세주문정보</title>
 </head>
 <body>
-    <h3>상세주문정보</h3>
-
-    <% for(let data of result_book_img) {%>
-            <img src="/book_img/<%=data.book_img_path%>" alt="" width="200" height="200">
-    <%}%>
-    
-    <p>주문권수<%= result_book_code[0].book_count%></p>
 
     <table>
+        <h3>주문상품정보</h3>
+        <tr>
+            <% for(let data of result_book_img) {%>
+                <td><img src="/book_img/<%=data.book_img_path%>" alt="" width="200" height="200"></td>
+            <%}%>
+        </tr>
+        <tr>
+            <% for(let data2 of result_book_img) {%>
+                <td>책이름: <%= data2.book_name%></td>
+            <%}%>
+        </tr>
+        <tr>
+            <% for(let book_count of result_book_code) {%>
+                <td>주문권수: <%= book_count.book_count%>권</td>
+            <%}%>
+        </tr>
+    </table>
+    
+    <br>
+    <br>
 
+    <table>
+        <h3>주문정보</h3>
         <% for(let data2 of result_order) { %>
             <tr>
-                <td>주문번호: <%= data2.order_id%></td>
+                <td>주문번호: <%= data2.order_id%></td> <td>주문시간:<%= data2.order_day%></td>
+            </tr>
+            <tr>
+                <td>주문금액: <%= data2.order_total_money%>원&nbsp;&nbsp;&nbsp;&nbsp;</td><td>총 주문 권수: <%= total_book_count%>권</td>
             </tr>
             <tr>
                 <td>주문자: <%= data2.user_user_id%></td>
             </tr>
             <tr>
-                <td>주문시간:<%= data2.order_day%></td>
+                <td><h3>결제정보</h3></td>
             </tr>
             <tr>
-                <td>주문금액: <%= data2.order_total_money%></td>
+                <td>결제카드번호: <%= data2.order_card_num%></td><td>카드종류: <%= data2.order_card_kind%>&nbsp;&nbsp;</td><td>유효기간: <%= data2.order_card_valdity%></td>
             </tr>
             <tr>
-                <td>결제카드번호: <%= data2.order_card_num%></td><td>카드종류: <%= data2.order_card_kind%></td><td>유효기간: <%= data2.order_card_valdity%></td>
+                <td><h3>배송지정보</h3></td>
             </tr>
             <tr>
-                <td>우편번호: <%= data2.order_post_num%></td><td>메인주소: <%= data2.order_main_adr%></td><td>상세주소: <%= data2.order_detail_adr%></td>
+                <td>우편번호: <%= data2.order_post_num%></td><td>메인주소: <%= data2.order_main_adr%>&nbsp;&nbsp;</td><td>상세주소: <%= data2.order_detail_adr%></td>
             </tr>
         <%}%>
 
