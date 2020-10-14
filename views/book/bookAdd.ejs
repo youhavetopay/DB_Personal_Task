@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>책 추가</title>
+</head>
+
+<body>
+    <h2>책 추가</h2>
+
+    <form action="/book/add" method="post" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td>책이름: <input type="text" name="bookName"></td>
+            </tr>
+            <tr>
+                <td>재고량: <input type="text" name="bookStock">권</td>
+            </tr>
+            <tr>
+                <td>가격: <input type="text" name="bookPrice">원</td>
+            </tr>
+            <tr>
+                <td>이미지: <input type="file" name="bookImg"></td>
+            </tr>
+        </table>
+        <input type="submit" value="추가">
+    </form>
+
+</body>
+
+</html>

@@ -24,7 +24,7 @@
     <br>
     <br>
 
-    <form action="/book/update/<%= book_info[0].book_id%>" method="post">
+    <form action="/book/update/<%= book_info[0].book_id%>" method="post" enctype="multipart/form-data">
         <table>
             <h3>수정 할 정보</h3>
             <% for(let data2 of book_info){%>
@@ -36,6 +36,9 @@
             </tr>
             <tr>
                 <td>가격: <input type="text" name="price" value="<%= data2.book_price%>">원</td>
+            </tr>
+            <tr>
+                <td>이미지: <input type="file" name="img"></td>
             </tr>
             <%}%>
         </table>

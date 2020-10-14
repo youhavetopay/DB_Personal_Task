@@ -7,7 +7,19 @@
 </head>
 <body>
 
-    <h3><%= userName%>의 장바구니</h3>
+    <h3><%= title%>의 장바구니</h3>
+
+    <% if(list == null) {%>
+        <p>장바구니가 비었습니다.</p>
+    <%} else{%>
+        <table>
+            <% for(let data of list){%>
+                <tr>
+                    <td><img src="/book_img/<%=data.book_img_path%>" alt="" width="200" height="200"></td><td>책이름: <%= data.book_name%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>수량: <%= data.book_count%>권&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>금액: <%= data.book_count * data.book_price%>원</td>
+                </tr>
+            <%}%>
+        </table>
+    <%}%>
     
 </body>
 </html>
