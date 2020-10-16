@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장바구니 목록 수정</title>
+</head>
+
+<body>
+    <h3>장바구니 수정</h3>
+    <form action="/basket/update/<%= book_info[0].book_list_book_id%>/<%= book_info[0].basket_bas_id%>" method="POST">
+        <table>
+            <% for(let data of book_info) {%>
+            <tr>
+                <td>책이름 : <%= data.book_name%></td>
+            </tr>
+            <%}%>
+            <tr>
+                <td>
+                    <select name="book_count">
+                        <% for(var i = 1; i<= book_info[0].book_stock; i++) {%>
+                            <option value="<%= i%>"><%= i%></option>
+                        <%}%>
+                    </select>
+                권</td>
+            </tr>
+        
+        </table>
+
+        <input type="submit" value="수정">
+    </form>
+</body>
+</html>

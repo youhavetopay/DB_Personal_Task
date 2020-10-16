@@ -197,8 +197,12 @@ router.post('/order/:book_id/:book_price/:book_count', function(req, res, next){
                                                         res.redirect('/');
                                                     }
                                                     else{
-                                                        console.log('주문성공');
-                                                        res.redirect('/');
+                                                        res.send(
+                                                            `<script type="text/javascript">
+                                                            alert("주문완료"); 
+                                                            location.href='/';
+                                                            </script>`
+                                                        );
                                                     }
                                                 })
                                             }
@@ -249,13 +253,21 @@ router.post('/add', upload.single('bookImg'),function(req, res, next){
     var body = req.body;
 
     if(body.bookName == null || body.bookStock == null || body.bookPrice == null || body.bookImg == null){
-        console.log('하나 빼 먹음');
-        res.redirect('/');
+        res.send(
+            `<script type="text/javascript">
+            alert("하나 빼 먹음"); 
+            location.href='/';
+            </script>`
+        );
     }
     else{
         // 맨위에 참고
-        console.log('책 추가 성공')
-        res.redirect('/');
+        res.send(
+            `<script type="text/javascript">
+            alert("책 추가 성공"); 
+            location.href='/';
+            </script>`
+        );
         // // 책 추가
     }
 })
@@ -268,13 +280,21 @@ router.post('/update/:book_id',upload.single('img'),function(req, res, next){
     var body = req.body;
 
     if(body.name == null || body.stock == null || body.price == null || body.img == null){
-        console.log('하나 빼 먹음')
-        res.redirect('/')
+        res.send(
+            `<script type="text/javascript">
+            alert("하나 빼 먹음"); 
+            location.href='/';
+            </script>`
+        );
     }
     else{
         // 맨위에 참고
-        console.log('책 수정 성공')
-        res.redirect('/');
+        res.send(
+            `<script type="text/javascript">
+            alert("책 수정 성공"); 
+            location.href='/';
+            </script>`
+        );
         // // 책 정보 수정
     }
 })
@@ -295,8 +315,12 @@ router.post('/delete/:book_id', function(req, res, next){
             console.log(err)
         }
         else{
-            console.log('책 삭제')
-            res.redirect('/')
+            res.send(
+                `<script type="text/javascript">
+                alert("책 삭제 성공"); 
+                location.href='/';
+                </script>`
+            );
         }
     })
 })

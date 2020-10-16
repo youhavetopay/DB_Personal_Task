@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장바구니 주문</title>
+</head>
+<body>
+    
+    <h2>주문정보</h2>
+
+    <table>
+        <tr><% for(let bookdata1 of book_result){%>
+            <td><img src="/book_img/<%=bookdata1.book_img_path%>" alt="" width="150" height="150"></td>
+            <%}%>
+        </tr>
+
+        <tr><% for(let bookdata of book_result){%>
+            <td>책이름: <%= bookdata.book_name%></td>
+            <%}%>
+        </tr>
+
+        <tr><% for(let bookdata of book_result){%>
+            <td>선택수량: <%= bookdata.book_count%></td>
+            <%}%>
+        </tr>
+        <tr><% for(let bookdata of book_result){%>
+            <td>권 당 가격: <%= bookdata.book_price%></td>
+            <%}%>
+        </tr>
+        <tr><% for(let bookdata of book_result){%>
+            <td>가격: <%= bookdata.total_money%></td>
+            <%}%>
+        </tr>
+    </table>
+    
+
+
+    <form action="" method="post">
+        <table>
+            <tr>
+                <td>결제카드: <select name="select_card">
+                    <% for(let cardData of card_info) {%>
+                        <option value="<%= cardData.card_num%>">카드번호:<%= cardData.card_num%>  카드종류:<%= cardData.card_kind%>  유효기한:<%= cardData.card_valldity%></option>
+                    <%}%>
+                </select></td>
+            </tr>
+           
+            <tr>
+                <td>배송지: <select name="select_adr">
+                    <% for(let adrData of addres_info) {%>
+                        <option value="<%=adrData.adr_id%>">우편번호:<%= adrData.post_num%>  메인주소:<%= adrData.main_adr%>  상세주소:<%= adrData.detil_adr%></option>
+                    <%}%>
+                </select></td>
+            </tr>
+        </table>
+
+        <h3>총 주문 금액: <%= total_money%></h3>
+
+        <input type="submit" value="주문하기">
+    </form>
+
+</body>
+</html>

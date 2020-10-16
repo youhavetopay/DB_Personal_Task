@@ -12,13 +12,27 @@
     <% if(list == null) {%>
         <p>장바구니가 비었습니다.</p>
     <%} else{%>
+        <button><a href="/">홈</a></button>
+        <h4>장바구니 생성시간 : <%=  CreateDate%></h4>
         <table>
             <% for(let data of list){%>
                 <tr>
-                    <td><img src="/book_img/<%=data.book_img_path%>" alt="" width="200" height="200"></td><td>책이름: <%= data.book_name%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>수량: <%= data.book_count%>권&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>금액: <%= data.book_count * data.book_price%>원</td>
+                    <td><img src="/book_img/<%=data.book_img_path%>" alt="" width="200" height="200"></td>
+                    <td>책이름: <%= data.book_name%>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>수량: <%= data.book_count%>권&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                    <td>금액: <%= data.total_money%>원</td>
+                    <td><button><a href="/basket/update/<%= data.basket_bas_id%>/<%= data.book_list_book_id%>">수정하기</a></button></td>
+                    <form action="/basket/delete/<%= data.basket_bas_id%>/<%= data.book_list_book_id%>" method="POST">
+                        <td><input type="submit" value="삭제하기"></input></td>
+                    </form>
                 </tr>
             <%}%>
         </table>
+
+        <h3>총 주문 금액:<%= total_money%>원</h3>
+
+        <button><a href="/basket/basket_order/<%= list[0].basket_bas_id%>">주문하기</a></button>
+
     <%}%>
     
 </body>

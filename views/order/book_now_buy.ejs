@@ -9,20 +9,25 @@
 <body>
 
     <h3>책 상세정보</h3>
-    <% for(let bookdata of bookResult){%>
-        <img src="/book_img/<%=bookdata.book_img_path%>" alt="" width="300" height="300">
         <table>
-            <tr>
+            <tr><% for(let bookdata1 of bookResult){%>
+                <td><img src="/book_img/<%=bookdata1.book_img_path%>" alt="" width="300" height="300"></td>
+            </tr><%}%>
+
+            <tr><% for(let bookdata of bookResult){%>
                 <td>책이름: <%= bookdata.book_name%></td>
+                <%}%>
             </tr>
-            <tr>
+
+            <tr><% for(let bookdata of bookResult){%>
                 <td>남은수량: <%= bookdata.book_stock%></td>
+                <%}%>
             </tr>
-            <tr>
-                <td>가격: <%= bookdata.book_price%></td>
+            <tr><% for(let bookdata of bookResult){%>
+                <td>권 당 가격: <%= bookdata.book_price%></td>
+                <%}%>
             </tr>
         </table>
-    <%}%>
 
     <h3>주문정보</h3>
 

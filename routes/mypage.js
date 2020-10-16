@@ -70,8 +70,12 @@ router.post('/adr_delete/:id', function (req, res, next) {
       res.redirect('/mypage');
     }
     else {
-      console.log("삭제 성공");
-      res.redirect('/mypage');
+      res.send(
+        `<script type="text/javascript">
+        alert("배송지 삭제 성공"); 
+        location.href='/mypage';
+        </script>`
+      );
     }
 
   })
@@ -84,21 +88,23 @@ router.post('/card_delete/:id', function (req, res, next) {
   let card_num = req.params.id;
   var userId = req.session.user.id;
 
-  // 카드테이블 정보삭제
-  client.query('delete from card_info where user_user_id = ? and card_num = ?', [
+  client.query('delete from card_info where user_user_id = ? and card_num = ?',[
     userId, card_num
-  ], function (err) {
-    if (err) {
+  ], function(err){
+    if(err){
       console.log('쿼리 오류');
       console.log(err);
       res.redirect('/mypage');
     }
-    else {
-      console.log("삭제 성공");
-      res.redirect('/mypage');
+    else{
+      res.send(
+        `<script type="text/javascript">
+        alert("카드 삭제 성공"); 
+        location.href='/mypage';
+        </script>`
+      );
     }
-
-  });
+  })
 
 });
 
@@ -125,8 +131,12 @@ router.post('/adr_add', function (req, res, next) {
   let body = req.body;
 
   if (body.main_adr == '' || body.detil_adr == '' || body.post_num == '') {
-    console.log('하나 빼 먹음')
-    res.redirect('/')
+    res.send(
+      `<script type="text/javascript">
+      alert("하나 빼 먹음"); 
+      location.href='/';
+      </script>`
+    );
   }
   else {
     // 배송지 테이블 정보 등록
@@ -167,8 +177,12 @@ router.post('/adr_add', function (req, res, next) {
                 res.redirect('/mypage');
               }
               else {
-                console.log('등록성공');
-                res.redirect('/mypage');
+                res.send(
+                  `<script type="text/javascript">
+                  alert("배송지 등록 성공"); 
+                  location.href='/mypage';
+                  </script>`
+                );
 
               }
 
@@ -188,8 +202,12 @@ router.post('/card_add', function (req, res, next) {
   var userId = req.session.user.id;
 
   if (body.card_num == '' || body.card_kind == '' || body.card_valldity == '') {
-    console.log('하나 빼 먹음')
-    res.redirect('/')
+    res.send(
+      `<script type="text/javascript">
+      alert("하나 빼 먹음"); 
+      location.href='/mypage';
+      </script>`
+    );
   }
   else {
     // 카드정보 등록
@@ -203,8 +221,12 @@ router.post('/card_add', function (req, res, next) {
         res.redirect('/mypage');
       }
       else {
-        console.log('등록성공');
-        res.redirect('/mypage');
+        res.send(
+          `<script type="text/javascript">
+          alert("카드 등록 성공"); 
+          location.href='/mypage';
+          </script>`
+        );
       }
     });
   }
@@ -267,8 +289,12 @@ router.post('/card_update/:card_num', function (req, res, next) {
   var card_num = req.params.card_num;
 
   if (body.card_num == '' || body.card_kind == '' || body.card_valldity == '') {
-    console.log('하나 빼 먹음');
-    res.redirect('/')
+    res.send(
+      `<script type="text/javascript">
+      alert("하나 빼 먹음"); 
+      location.href='/mypage';
+      </script>`
+    );
   }
   else {
     // 카드정보 업데이트
@@ -281,7 +307,12 @@ router.post('/card_update/:card_num', function (req, res, next) {
         res.redirect('/mypage');
       }
       else {
-        res.redirect('/mypage');
+        res.send(
+          `<script type="text/javascript">
+          alert("카드 정보 업데이트 성공"); 
+          location.href='/mypage';
+          </script>`
+        );
       }
     })
   }
@@ -295,8 +326,12 @@ router.post('/adr_update/:adr_id', function (req, res, next) {
   var adr_id = req.params.adr_id;
 
   if (body.main_adr == '' || body.detil_adr == '' || body.post_num == '') {
-    console.log('하나 빼 먹음');
-    res.redirect('/')
+    res.send(
+      `<script type="text/javascript">
+      alert("하나 빼 먹음"); 
+      location.href='/mypage';
+      </script>`
+    );
   }
   else {
     // 주소정보 업데이트
@@ -309,7 +344,12 @@ router.post('/adr_update/:adr_id', function (req, res, next) {
         res.redirect('/mypage');
       }
       else {
-        res.redirect('/mypage');
+        res.send(
+          `<script type="text/javascript">
+          alert("배송지 수정 성공"); 
+          location.href='/mypage';
+          </script>`
+        );
       }
     })
   }
@@ -419,7 +459,12 @@ router.post('/order_delete/:orderId', function (req, res, next) {
               console.log(err);
             }
             else {
-              res.redirect('/mypage');
+              res.send(
+                `<script type="text/javascript">
+                alert("주문 삭제 성공"); 
+                location.href='/mypage';
+                </script>`
+              );
             }
           })
         }

@@ -49,8 +49,12 @@ router.post('/login', function(req, res, next){
   var user_pw = req.body.user_pw;
 
   if(user_id == '' || user_pw== ''){ //입력안하면 안됨
-    console.log('하나 빼 먹음');
-    res.redirect('/')
+    res.send(
+      `<script type="text/javascript">
+      alert("하나 빼 먹음"); 
+      location.href='/users/login';
+      </script>`
+  );
   }
   else{
     client.query('select * from db.user where user_id= ? and user_pw = ?',[
@@ -62,7 +66,12 @@ router.post('/login', function(req, res, next){
       }
       else{
         if(result[0] == null){
-          console.log("로그인정보 틀림");
+          res.send(
+            `<script type="text/javascript">
+            alert("로그인 정보 틀림"); 
+            location.href='/users//login';
+            </script>`
+        );
           
         }
         else{
@@ -72,8 +81,14 @@ router.post('/login', function(req, res, next){
             "id" : result[0].user_id
           };
 
+          res.send(
+            `<script type="text/javascript">
+            alert("로그인 성공"); 
+            location.href='/';
+            </script>`
+        );
+
         }
-        res.redirect("/");
         
       }
     })

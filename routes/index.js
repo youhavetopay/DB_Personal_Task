@@ -60,8 +60,12 @@ router.post('/create', function (req, res, next) {
 
   if(body.user_id == '' || body.user_pw == '' || body.user_name== ''){
     //하나라도 안적으면 안됨
-    console.log("하나 빼먹음")
-    res.redirect('/')
+    res.send(
+      `<script type="text/javascript">
+      alert("하나 빼 먹음"); 
+      location.href='/';
+      </script>`
+  );
   }
   else{
     client.query("insert into db.user (USER_ID, USER_PW, USER_NAME) values(?,?,?)", [
@@ -72,7 +76,12 @@ router.post('/create', function (req, res, next) {
         console.log("쿼리 오류");
       }
       else {
-        console.log("회원가입 성공");
+        res.send(
+          `<script type="text/javascript">
+          alert("회원가입 성공"); 
+          location.href='/';
+          </script>`
+      );
         res.redirect("/create");
       }
     });
