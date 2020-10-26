@@ -413,6 +413,18 @@ router.post('/order/:basketId', function (req, res, next) {
                     for (let data of booK_info) {
                         total_money += data.total_money;
                     }
+
+                    for(var count = 0; count<booK_info.length; count++){
+                        if(booK_info[i].book_stock - booK_info[i].book_count < 0){
+                            res.send(
+                                `<script type="text/javascript">
+                            alert("재고 부족"); 
+                            location.href='/';
+                            </script>`
+                            );
+                        }
+                    }
+
                     // order_list 테이블에 insert
                     client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?)', [
                         null, userId, nowTime, total_money, user_info[0].card_kind, user_info[0].card_num, user_info[0].card_valldity, user_info[0].post_num, user_info[0].main_adr, user_info[0].detil_adr

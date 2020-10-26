@@ -82,7 +82,6 @@ router.post('/create', function (req, res, next) {
           location.href='/';
           </script>`
       );
-        res.redirect("/create");
       }
     });
   }
