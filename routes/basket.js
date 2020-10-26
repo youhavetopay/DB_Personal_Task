@@ -5,6 +5,7 @@ var express = require('express');
 var router = express.Router();
 const mysql = require('mysql');
 var moment = require('moment');
+const e = require('express');
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
@@ -50,8 +51,17 @@ router.get('/', function (req, res, next) {
                         res.redirect('/');
                     }
                     else {
-                        // 장바구니 방금 만들어서 리스트 없음
-                        res.render('order/basket', { title: userName, list: null, CreateDate: results[0].bas_cr_time });
+                        client.query('select * from basket where user_user_id = ?', [
+                            userId
+                        ], function (err, result_time, field) {
+                            if (err) {
+
+                            }
+                            else {
+                                // 장바구니 방금 만들어서 리스트 없음
+                                res.render('order/basket', { title: userName, list: null, CreateDate: result_time[0].bas_cr_time});
+                            }
+                        })
                     }
                 })
             }
@@ -359,7 +369,132 @@ router.get('/basket_order/:basketId', function (req, res, next) {
                             for (var i = 0; i < book_result.length; i++) {
                                 money += book_result[i].total_money;
                             }
-                            res.render('order/basket_order', { book_result: book_result, addres_info: addres_info, card_info: card_info, total_money: money });
+                            res.render('order/basket_order', { book_result: book_result, addres_info: addres_info, card_info: card_info, total_money: money, basketId: basketId });
+                        }
+                    })
+                }
+            })
+        }
+    })
+
+})
+
+// 장바구니 주문 
+router.post('/order/:basketId', function (req, res, next) {
+    var basketId = req.params.basketId;
+    var body = req.body;
+
+    var userId = req.session.user.id;
+
+    var cardNum = body.select_card;
+    var adrInfo = body.select_adr;
+
+    var nowTime = moment().format('YYYY-MM-DD HH:mm');
+
+    // 선택한 카드정보랑 배송지 정보가져오기
+    client.query('select * from address_info, card_info where card_num = ? AND adr_id = ?', [
+        cardNum, adrInfo
+    ], function (err, user_info, field) {
+        if (err) {
+
+        }
+        else {
+            // 장바구니에 담긴 책 정보 랑 총 구매 가격 가져오기
+            client.query('select book_list_has_basket.book_list_book_id, book_list_has_basket.basket_bas_id,book_list_has_basket.book_count, book_list.book_id, book_list.book_name,book_list.book_stock, book_list.book_price, book_list.book_img_path, (book_list.book_price * book_list_has_basket.book_count) as total_money from book_list_has_basket INNER JOIN book_list on book_list_has_basket.book_list_book_id = book_list.book_id WHERE book_list_has_basket.basket_bas_id = ?', [
+                basketId
+            ], function (err, booK_info, field) {
+                if (err) {
+                    console.log('쿼리 오류1');
+                    console.log(err);
+                    res.redirect('/');
+                }
+                else {
+                    var total_money = 0;
+                    for (let data of booK_info) {
+                        total_money += data.total_money;
+                    }
+                    // order_list 테이블에 insert
+                    client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?)', [
+                        null, userId, nowTime, total_money, user_info[0].card_kind, user_info[0].card_num, user_info[0].card_valldity, user_info[0].post_num, user_info[0].main_adr, user_info[0].detil_adr
+                    ], function (err) {
+                        if (err) {
+
+                            console.log('쿼리 오류2');
+                            console.log(err);
+                            res.redirect('/');
+                        }
+                        else {
+                            //가장 최근에 추가된 주문번호 가져오기
+                            client.query('select max(order_id) as order_id from order_list',
+                                function (err, order_id, field) {
+                                    if (err) {
+                                        console.log('쿼리 오류3');
+                                        console.log(err);
+                                        res.redirect('/');
+                                    }
+                                    else {
+                                        // 주문 상세정보에 책 정보 넣기
+                                        for (var i = 0; i < booK_info.length; i++) {
+                                            client.query('insert into order_list_has_book_list values(?,?,?)', [
+                                                order_id[0].order_id, booK_info[i].book_list_book_id, booK_info[i].book_count
+                                            ], function (err) {
+                                                if (err) {
+                                                    console.log('쿼리 오류4');
+                                                    console.log(err);
+                                                    res.redirect('/');
+                                                }
+                                                else {
+
+                                                }
+                                            })
+                                            // 책 주문한 만큼 재고량 빼기
+                                            client.query('update book_list set book_stock = ? where book_id = ?', [
+                                                booK_info[i].book_stock - booK_info[i].book_count, booK_info[i].book_list_book_id
+                                            ], function (err) {
+                                                if (err) {
+                                                    console.log('쿼리 오류5');
+                                                    console.log(err);
+                                                    res.redirect('/');
+                                                }
+                                                else {
+
+                                                }
+                                            })
+                                        }
+
+                                        // 장바구니 목록 삭제하기
+                                        client.query('delete from book_list_has_basket where basket_bas_id= ?', [
+                                            basketId
+                                        ], function (err) {
+                                            if (err) {
+                                                console.log('쿼리 오류6');
+                                                console.log(err);
+                                                res.redirect('/');
+                                            }
+                                            else {
+                                                client.query('delete from basket where user_user_id = ?', [
+                                                    userId
+                                                ], function (err) {
+                                                    if (err) {
+                                                        console.log('쿼리 오류7');
+                                                        console.log(err);
+                                                        res.redirect('/');
+                                                    }
+                                                    else {
+                                                        res.send(
+                                                            `<script type="text/javascript">
+                                                        alert("장바구니 주문 성공"); 
+                                                        location.href='/';
+                                                        </script>`
+                                                        );
+                                                    }
+                                                })
+                                            }
+                                        })
+
+
+                                    }
+                                })
                         }
                     })
                 }

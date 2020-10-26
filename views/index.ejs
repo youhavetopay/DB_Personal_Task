@@ -44,12 +44,16 @@
       <td>책이름:<%= data.book_name%></td>
       <td>가격:<%= data.book_price%></td>
       <% if(session) { %>
-      <td><button><a href="/book/buy_now/<%= data.book_id%>">바로구매</a></button></td>
+      <% if(data.book_stock <=0){%>
+        <td><h1>품절</h1></td>
+      <%} else{%>
+        <td><button><a href="/book/buy_now/<%= data.book_id%>">바로구매</a></button></td>
       <td>
         <form action="/basket/add/<%= data.book_id%>" method="post">
           <input type="submit" value="장바구니 담기">
         </form>
       </td>
+      <%}%>
       <% if(name == '관리자'){%>
       <td><button><a href="/book/update/<%= data.book_id%>">수정하기</a></button></td>
       <!-- <form action="/book/delete/<%= data.book_id%>" method="POST">
