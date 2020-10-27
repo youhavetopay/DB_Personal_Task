@@ -6,6 +6,8 @@ const path = require('path');
 const mysql = require('mysql');
 var multer = require('multer');
 
+let code = false;
+
 // 업로드 하는 파일 저장
 var storage = multer.diskStorage({
     destination: function(req, file, cd){
@@ -19,7 +21,9 @@ var storage = multer.diskStorage({
         var body = req.body;
         console.log( body.name + body.stock + body.price );
 
+        console.log('책이름 '+basename+"-"+Date.now()+extension)
 
+        code = true;
 
         if(bookId == null){
             // 책 새로 추가
@@ -252,7 +256,9 @@ router.get('/add', function(req, res, next){
 router.post('/add', upload.single('bookImg'),function(req, res, next){
     var body = req.body;
 
-    if(body.bookName == null || body.bookStock == null || body.bookPrice == null || body.bookImg == null){
+    // code는 이미지가 들어갔는지 아닌지 확인할려구
+
+    if(body.bookName == "" || body.bookStock == "" || body.bookPrice == "" || code == false){
         res.send(
             `<script type="text/javascript">
             alert("하나 빼 먹음"); 
@@ -262,6 +268,7 @@ router.post('/add', upload.single('bookImg'),function(req, res, next){
     }
     else{
         // 맨위에 참고
+        code = false;
         res.send(
             `<script type="text/javascript">
             alert("책 추가 성공"); 
@@ -279,7 +286,9 @@ router.post('/update/:book_id',upload.single('img'),function(req, res, next){
 
     var body = req.body;
 
-    if(body.name == null || body.stock == null || body.price == null || body.img == null){
+    // code는 이미지가 들어갔는지 아닌지 확인할려구
+
+    if(body.name == "" || body.stock == "" || body.price == "" || code == false){
         res.send(
             `<script type="text/javascript">
             alert("하나 빼 먹음"); 
@@ -289,6 +298,7 @@ router.post('/update/:book_id',upload.single('img'),function(req, res, next){
     }
     else{
         // 맨위에 참고
+        code = false
         res.send(
             `<script type="text/javascript">
             alert("책 수정 성공"); 

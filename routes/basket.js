@@ -39,7 +39,7 @@ router.get('/', function (req, res, next) {
             res.redirect('/');
         }
         else {
-            if (results == null || results == "" || results == undefined) {
+            if (results.length == 0) {
 
                 // 장바구니 없으면 장바구니 만들기
                 client.query('insert into basket values(?, ?, ?);', [
@@ -76,7 +76,7 @@ router.get('/', function (req, res, next) {
                         res.redirect('/');
                     }
                     else {
-                        if (basket_result == null || basket_result == "" || basket_result == undefined) {
+                        if (basket_result.length == 0) {
                             // 장바구니 비었을 때 리스트 없음
                             res.render('order/basket', { title: userName, list: null, CreateDate: results[0].bas_cr_time });
                         }
@@ -129,8 +129,11 @@ router.post('/add/:book_id', function (req, res, next) {
             res.redirect('/');
         }
         else {
-            console.log(basket_result);
-            if (basket_result == null || basket_result == "" || basket_result == undefined) {
+            console.log('타입 : '+typeof(basket_result))
+            console.log(basket_result.length)
+            console.log('장바구니 있는지 없는지 확인 '+basket_result);
+            
+            if (basket_result.length == 0) {
                 // 장바구니 없으면 장바구니 만들기
                 client.query('insert into basket values(?, ?, ?);', [
                     null, userId, nowTime
@@ -162,7 +165,7 @@ router.post('/add/:book_id', function (req, res, next) {
                                     }
                                     else {
                                         // 장바구니 안에 같은 책 없을 때만 추가
-                                        if (duplicated == null) {
+                                        if (duplicated.length == 0) {
                                             client.query('insert into book_list_has_basket values(?,?,?)', [
                                                 bookId, new_basket_result[0].bas_id, 1
                                             ], function (err) {
@@ -210,7 +213,7 @@ router.post('/add/:book_id', function (req, res, next) {
                     else {
                         // 장바구니 안에 같은 책 없을 때만 추가
                         console.log(duplicated);
-                        if (duplicated == null || duplicated == "" || duplicated == undefined) {
+                        if (duplicated.length == 0) {
                             client.query('insert into book_list_has_basket values(?,?,?)', [
                                 bookId, basket_result[0].bas_id, 1
                             ], function (err) {
@@ -414,17 +417,27 @@ router.post('/order/:basketId', function (req, res, next) {
                         total_money += data.total_money;
                     }
 
+                    var vali = 0;
+
+                    // 재고 검사
                     for(var count = 0; count<booK_info.length; count++){
-                        if(booK_info[i].book_stock - booK_info[i].book_count < 0){
-                            res.send(
-                                `<script type="text/javascript">
-                            alert("재고 부족"); 
-                            location.href='/';
-                            </script>`
-                            );
+                        if(booK_info[count].book_stock - booK_info[count].book_count < 0){
+                            vali = 1;
+                            break;
                         }
                     }
+                    // 장바구니 목록중 하나라도 모자랄 경우
+                    if(vali == 1){
+                        res.send(
+                            `<script type="text/javascript">
+                        alert("재고 부족"); 
+                        location.href='/';
+                        </script>`
+                        );
+                    }
 
+                    // 재고 충분할때
+                    else{
                     // order_list 테이블에 insert
                     client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?)', [
                         null, userId, nowTime, total_money, user_info[0].card_kind, user_info[0].card_num, user_info[0].card_valldity, user_info[0].post_num, user_info[0].main_adr, user_info[0].detil_adr
@@ -509,6 +522,7 @@ router.post('/order/:basketId', function (req, res, next) {
                                 })
                         }
                     })
+                    }
                 }
             })
         }
