@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1><%= value %>에 대한 검색결과</h1>
+    <a href="/">홈</a>
+    <br>
+    <br>
+    <%if(result){%>
+        <table>
+            <%for(let data of result){%>
+            <tr>
+              <td><img src="./book_img/<%= data.book_img_path%>" alt="" width="100" height="100"></td>
+              <td>책이름:<%= data.book_name%></td>
+              <td>가격:<%= data.book_price%></td>
+              <td>평점:<%= (data.book_score).toFixed(2)%></td>
+              <% if(session) { %>
+                <% if(data.book_stock <=0){%>
+                    <td><h1>품절</h1></td>
+                <%} else{%>
+                    <td><button><a href="/book/buy_now/<%= data.book_id%>">바로구매</a></button></td>
+                    <td>
+                    <form action="/basket/add/<%= data.book_id%>" method="post">
+                        <input type="submit" value="장바구니 담기">
+                    </form>
+                    </td>
+                <%}%>
+              
+              <%}%>
+            </tr>
+            <%}%>
+        
+            </table>
+
+        
+    <%} else{%>
+        <h3>검색결과없음...</h3>
+    <%}%>
+
+</body>
+</html>

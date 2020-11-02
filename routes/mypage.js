@@ -398,12 +398,12 @@ router.get('/order_detail/:orderId', function (req, res, next) {
                   res.redirect('/mypage');
                 }
                 else {
-                  console.log(total_count[0].total_book_count)
+                
                   res.render('order/orderDetail', {
                     result_order: result_order,
                     result_book_img: result_book_img,
                     result_book_code: result_book_count,
-                    total_book_count: total_count[0].total_book_count
+                    total_book_count: total_count[0].total_book_count,
                   });
                 }
               });

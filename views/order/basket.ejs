@@ -8,9 +8,10 @@
 <body>
 
     <h3><%= title%>의 장바구니</h3>
-
+    
     <% if(list == null || list == "" || list == undefined) {%>
         <p>장바구니가 비었습니다.</p>
+        <h4>장바구니 생성시간 : <%=  CreateDate%></h4>
     <%} else{%>
         <button><a href="/">홈</a></button>
         <h4>장바구니 생성시간 : <%=  CreateDate%></h4>

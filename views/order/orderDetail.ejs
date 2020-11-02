@@ -44,6 +44,11 @@
             <tr>
                 <td><h3>결제정보</h3></td>
             </tr>
+            <% if(data2.order_discount > 1){ %>
+                <tr>
+                    <td>할인율: <%= data2.order_discount %>%</td><td>할인전 금액: <%= data2.order_af_total_money%>원</td>
+                </tr>
+            <%}%>
             <tr>
                 <td>결제카드번호: <%= data2.order_card_num%></td><td>카드종류: <%= data2.order_card_kind%>&nbsp;&nbsp;</td><td>유효기간: <%= data2.order_card_valdity%></td>
             </tr>

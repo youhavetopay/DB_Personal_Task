@@ -79,6 +79,7 @@ router.post('/login', function(req, res, next){
           req.session.user = {
             "name" : result[0].user_name,
             "id" : result[0].user_id
+            
           };
 
           res.send(

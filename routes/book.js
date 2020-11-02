@@ -7,56 +7,68 @@ const mysql = require('mysql');
 var multer = require('multer');
 
 let code = false;
+let minus = false;
 
 // 업로드 하는 파일 저장
 var storage = multer.diskStorage({
-    destination: function(req, file, cd){
+    destination: function (req, file, cd) {
         cd(null, "public/book_img/");
     },
-    filename: function(req, file, cd){
+    filename: function (req, file, cd) {
         let extension = path.extname(file.originalname);
         let basename = path.basename(file.originalname, extension);
 
         var bookId = req.params.book_id;
         var body = req.body;
-        console.log( body.name + body.stock + body.price );
+        console.log(body.name + body.stock + body.price);
 
-        console.log('책이름 '+basename+"-"+Date.now()+extension)
+        console.log('책이름 ' + basename + "-" + Date.now() + extension)
 
+        // 이미지 넣었는지 체크
         code = true;
 
-        if(bookId == null){
-            // 책 새로 추가
-            client.query('insert into book_list values(?,?,?,?,?)',[
-                null,body.bookName, body.bookStock, body.bookPrice, basename+"-"+Date.now()+extension
-            ], function(err){
-                if(err){
-                    console.log('쿼리오류');
-                    console.log(err);
-                }
-            })
+        // 마이너스 체크
+        if (body.stock < 0 || body.price < 1 || body.bookStock < 0 || body.bookPrice < 1) {
+            console.log('마이너스 입력함');
+            minus = false
         }
-        else{
-            // 책 정보 수정
-            client.query('update book_list set book_name = ?, book_stock =?, book_price =?, book_img_path = ? where book_id = ?',[
-                body.name, body.stock, body.price, basename+"-"+Date.now()+extension, bookId
-            ], function(err){
-                if(err){
-                    console.log('쿼리오류');
-                    console.log(err);
-                }
-            })
+        else {
+            if (bookId == null) {
+                // 책 새로 추가
+                client.query('insert into book_list values(?,?,?,?,?)', [
+                    null, body.bookName, body.bookStock, body.bookPrice, basename + "-" + Date.now() + extension
+                ], function (err) {
+                    if (err) {
+                        console.log('쿼리오류');
+                        console.log(err);
+                    }
+                })
+            }
+            else {
+                // 책 정보 수정
+                client.query('update book_list set book_name = ?, book_stock =?, book_price =?, book_img_path = ? where book_id = ?', [
+                    body.name, body.stock, body.price, basename + "-" + Date.now() + extension, bookId
+                ], function (err) {
+                    if (err) {
+                        console.log('쿼리오류');
+                        console.log(err);
+                    }
+                })
+            }
+            minus = true;
         }
 
-        cd(null, basename+"-"+Date.now()+extension);
+        cd(null, basename + "-" + Date.now() + extension);
     }
-    
+
 })
-var upload = multer({ 
+var upload = multer({
     storage: storage
- })
+})
 
 var moment = require('moment');
+const { min } = require('moment');
+const { count } = require('console');
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 
@@ -84,30 +96,30 @@ router.get('/buy_now/:bookId', function (req, res, next) {
             console.log(err);
             res.redirect('/');
         }
-        else{
+        else {
             // user가 등록한 카드정보 가져오기
-            client.query('select * from card_info where user_user_id = ?',[
+            client.query('select * from card_info where user_user_id = ?', [
                 userId
-            ], function(err, result_card, field){
+            ], function (err, result_card, field) {
                 if (err) {
                     console.log('쿼리 오류');
                     console.log(err);
                     res.redirect('/');
                 }
-                else{
+                else {
                     // 유저가 등록한 배송지 정보 가져오기
-                    client.query('select * from db.address_info where adr_id in (select address_info_adr_id from db.user_has_address_info where user_user_id = ?)',[
+                    client.query('select * from db.address_info where adr_id in (select address_info_adr_id from db.user_has_address_info where user_user_id = ?)', [
                         userId
-                    ], function(err, result_adr, field){
+                    ], function (err, result_adr, field) {
                         if (err) {
                             console.log('쿼리 오류');
                             console.log(err);
                             res.redirect('/');
                         }
-                        else{
+                        else {
                             res.render('order/book_now_buy', {
-                                bookResult: result_book, 
-                                cardResult: result_card, 
+                                bookResult: result_book,
+                                cardResult: result_card,
                                 adrResult: result_adr
                             });
                         }
@@ -123,7 +135,7 @@ router.get('/buy_now/:bookId', function (req, res, next) {
 
 
 //바로주문
-router.post('/order/:book_id/:book_price/:book_count', function(req, res, next){
+router.post('/order/:book_id/:book_price/:book_count', function (req, res, next) {
     var bookId = req.params.book_id;
     var bookPrice = req.params.book_price;
     var book_count = req.params.book_count;
@@ -134,91 +146,113 @@ router.post('/order/:book_id/:book_price/:book_count', function(req, res, next){
 
     console.log('수량' + body.select_book_count)
     console.log('카드' + body.select_card)
-    console.log('주소'+ body.select_adr)
+    console.log('주소' + body.select_adr)
 
-    if(body.select_book_count == undefined || body.select_card == undefined || body.select_adr == undefined){
+    if (body.select_book_count == undefined || body.select_card == undefined || body.select_adr == undefined) {
         console.log('하나 빼 먹음');
         res.redirect('/');
     }
-    else{
-        if(book_count <= 0){  // 재고량 없으면 주문 안됨
+    else {
+        if (book_count <= 0) {  // 재고량 없으면 주문 안됨
             console.log("재고없음")
             res.redirect('/');
         }
-        else{
+        else {
             var totalPrice = bookPrice * body.select_book_count;
-    
-        // 드롭박스에서 가져온 카드정보 가져오기
-        client.query('select * from card_info where card_num = ?',[
-            body.select_card
-        ], function(err, result_card, field){
-            if(err){
-                console.log(err);
-                res.redirect('/');
-            }
-            else{
-                // 드롭박스에서 가져온 배송지 정보 가져오기
-                client.query('select * from address_info where adr_id = ?',[
-                    body.select_adr
-                ], function(err, result_adr, field){
-                    if(err){
-                        console.log(err);
-                        res.redirect('/');
-                    }
-                    else{
-                        // order_list테이블에 값 넣기 
-                        client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?);',[
-                            null,userId, nowTime, totalPrice, result_card[0].card_kind, result_card[0].card_num, result_card[0].card_valldity, result_adr[0].post_num, result_adr[0].main_adr, result_adr[0].detil_adr
-                        ], function(err){
-                            if(err){
-                                console.log(err);
-                                res.redirect('/');
+
+
+
+            // 드롭박스에서 가져온 카드정보 가져오기
+            client.query('select * from card_info where card_num = ?', [
+                body.select_card
+            ], function (err, result_card, field) {
+                if (err) {
+                    console.log(err);
+                    res.redirect('/');
+                }
+                else {
+                    // 드롭박스에서 가져온 배송지 정보 가져오기
+                    client.query('select * from address_info where adr_id = ?', [
+                        body.select_adr
+                    ], function (err, result_adr, field) {
+                        if (err) {
+                            console.log(err);
+                            res.redirect('/');
+                        }
+                        else {
+                            var discount = 1
+                            var dis_p = 0;
+                            if (req.session.user.grade > 100000 && req.session.user.grade <= 200000) {
+                                discount = 0.8;
+                                dis_p = 20;
                             }
-                            else{
-                                // 가장 최근에 등록한 주문번호 가져오기
-                                client.query('select max(order_id) as order_id from order_list;',function(err, result_select, field){
-                                    if(err){
-                                        console.log(err);
-                                        res.redirect('/');
-                                    }
-                                    else{
-                                        // 주문도서목록에 값 넣기
-                                        client.query('insert into order_list_has_book_list values(?, ? ,?)',[
-                                            result_select[0].order_id, bookId, body.select_book_count
-                                        ], function(err){
-                                            if(err){
-                                                console.log(err);
-                                                res.redirect('/');
-                                            }
-                                            else{
-                                                var new_book_count = book_count-body.select_book_count;
-                                                // 주문한 도서 권수 만큼 도서 재고량 빼기
-                                                client.query('update book_list set book_stock = ? where book_id = ?',[
-                                                    new_book_count, bookId
-                                                ], function(err){
-                                                    if(err){
-                                                        console.log(err);
-                                                        res.redirect('/');
-                                                    }
-                                                    else{
-                                                        res.send(
-                                                            `<script type="text/javascript">
-                                                            alert("주문완료"); 
-                                                            location.href='/';
-                                                            </script>`
-                                                        );
-                                                    }
-                                                })
-                                            }
-                                        })
-                                    }
-                                })
+                            else if (req.session.user.grade > 200000 && req.session.user.grade < 300000) {
+                                discount = 0.7;
+                                dis_p = 30;
                             }
-                        })
-                    }
-                });
-            }
-        })
+                            else if (req.session.user.grade >= 300000) {
+                                discount = 0.5;
+                                dis_p = 50;
+                            }
+
+                            console.log('할인률 '+dis_p)
+
+                            // order_list테이블에 값 넣기 
+                            client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?,?,?);', [
+                                null, userId, nowTime, totalPrice*discount, result_card[0].card_kind, result_card[0].card_num, result_card[0].card_valldity, result_adr[0].post_num, result_adr[0].main_adr, result_adr[0].detil_adr,
+                                totalPrice,dis_p
+                            ], function (err) {
+                                if (err) {
+                                    console.log(err);
+                                    res.redirect('/');
+                                }
+                                else {
+                                    // 가장 최근에 등록한 주문번호 가져오기
+                                    client.query('select max(order_id) as order_id from order_list;', function (err, result_select, field) {
+                                        if (err) {
+                                            console.log(err);
+                                            res.redirect('/');
+                                        }
+                                        else {
+                                            // 주문도서목록에 값 넣기
+                                            client.query('insert into order_list_has_book_list values(?, ? ,?, ?)', [
+                                                result_select[0].order_id, bookId, body.select_book_count, req.body.book_score
+                                            ], function (err) {
+                                                if (err) {
+                                                    console.log(err);
+                                                    res.redirect('/');
+                                                }
+                                                else {
+                                                    var new_book_count = book_count - body.select_book_count;
+                                                    // 주문한 도서 권수 만큼 도서 재고량 빼기
+                                                    client.query('update book_list set book_stock = ?, book_score = (select avg(user_give_score) from order_list_has_book_list where book_list_book_id =? ) where book_id = ?', [
+                                                        new_book_count, bookId,bookId
+                                                    ], function (err) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            res.redirect('/');
+                                                        }
+                                                        else {
+
+                                                    
+                                                            res.send(
+                                                                `<script type="text/javascript">
+                                                                alert("주문 완료"); 
+                                                                location.href='/';
+                                                                </script>`
+                                                            );
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    });
+                }
+            })
         }
     }
 
@@ -226,18 +260,18 @@ router.post('/order/:book_id/:book_price/:book_count', function(req, res, next){
 })
 
 // 책 정보 수정페이지 렌더링
-router.get('/update/:book_id', function(req, res, next){
+router.get('/update/:book_id', function (req, res, next) {
     var bookId = req.params.book_id;
 
     // 책정보 가져오기
-    client.query('select * from book_list where book_id = ?',[
+    client.query('select * from book_list where book_id = ?', [
         bookId
-    ], function(err, result, field){
-        if(err){
+    ], function (err, result, field) {
+        if (err) {
             console.log('에러발생')
             console.log(err)
         }
-        else{
+        else {
             res.render('book/bookUpdate', {
                 book_info: result
             })
@@ -246,66 +280,90 @@ router.get('/update/:book_id', function(req, res, next){
 })
 
 // 책 추가 페이지 렌더링
-router.get('/add', function(req, res, next){
-    
+router.get('/add', function (req, res, next) {
+
     res.render('book/bookAdd');
 
 });
 
 // 책 추가
-router.post('/add', upload.single('bookImg'),function(req, res, next){
+router.post('/add', upload.single('bookImg'), function (req, res, next) {
     var body = req.body;
 
     // code는 이미지가 들어갔는지 아닌지 확인할려구
 
-    if(body.bookName == "" || body.bookStock == "" || body.bookPrice == "" || code == false){
-        res.send(
-            `<script type="text/javascript">
-            alert("하나 빼 먹음"); 
-            location.href='/';
-            </script>`
-        );
+    if (minus) {
+        if (body.bookName == "" || body.bookStock == "" || body.bookPrice == "" || code == false) {
+            res.send(
+                `<script type="text/javascript">
+                alert("하나 빼 먹음"); 
+                location.href='/';
+                </script>`
+            );
+        }
+        else {
+            // 맨위에 참고
+            code = false;
+            res.send(
+                `<script type="text/javascript">
+                alert("책 추가 성공"); 
+                location.href='/';
+                </script>`
+            );
+        }
+        // // 책 추가
     }
-    else{
-        // 맨위에 참고
+    else {
+        minus = false;
         code = false;
         res.send(
             `<script type="text/javascript">
-            alert("책 추가 성공"); 
-            location.href='/';
-            </script>`
+                alert("마이너스 입력하거나 하나 빼먹음"); 
+                location.href='/';
+                </script>`
         );
-        // // 책 추가
     }
 })
 
 
 // 책 정보 수정
-router.post('/update/:book_id',upload.single('img'),function(req, res, next){
+router.post('/update/:book_id', upload.single('img'), function (req, res, next) {
     var bookId = req.params.book_id;
 
     var body = req.body;
 
     // code는 이미지가 들어갔는지 아닌지 확인할려구
 
-    if(body.name == "" || body.stock == "" || body.price == "" || code == false){
-        res.send(
-            `<script type="text/javascript">
-            alert("하나 빼 먹음"); 
-            location.href='/';
-            </script>`
-        );
+    if (minus) {
+        if (body.bookName == "" || body.bookStock == "" || body.bookPrice == "" || code == false) {
+            res.send(
+                `<script type="text/javascript">
+                alert("하나 빼 먹음"); 
+                location.href='/';
+                </script>`
+            );
+        }
+        else {
+            // 맨위에 참고
+            code = false;
+            res.send(
+                `<script type="text/javascript">
+                alert("책 추가 성공"); 
+                location.href='/';
+                </script>`
+            );
+        }
+        // // 책 추가
     }
-    else{
-        // 맨위에 참고
-        code = false
+    else {
+        minus = false;
+        code = false;
         res.send(
             `<script type="text/javascript">
-            alert("책 수정 성공"); 
-            location.href='/';
-            </script>`
+                alert("마이너스 입력하거나 하나 빼먹음"); 
+                location.href='/';
+                </script>`
         );
-        // // 책 정보 수정
     }
 })
 
@@ -313,18 +371,18 @@ router.post('/update/:book_id',upload.single('img'),function(req, res, next){
 
 
 // 책 정보 삭제  ==> 하면 안 될듯??
-router.post('/delete/:book_id', function(req, res, next){
+router.post('/delete/:book_id', function (req, res, next) {
     var bookId = req.params.book_id;
 
     // 책정보 삭제 
-    client.query('delete from book_list where book_id = ?',[
+    client.query('delete from book_list where book_id = ?', [
         bookId
-    ], function(err){
-        if(err){
+    ], function (err) {
+        if (err) {
             console.log('에러발생')
             console.log(err)
         }
-        else{
+        else {
             res.send(
                 `<script type="text/javascript">
                 alert("책 삭제 성공"); 

@@ -8,7 +8,7 @@
 <body>
     
     <h2>주문정보</h2>
-
+    <form action="/basket/order/<%= basketId%>" method="post">
     <table>
         <tr><% for(let bookdata1 of book_result){%>
             <td><img src="/book_img/<%=bookdata1.book_img_path%>" alt="" width="150" height="150"></td>
@@ -32,11 +32,21 @@
             <td>가격: <%= bookdata.total_money%></td>
             <%}%>
         </tr>
+        <tr>
+            <% for(let bookdata of book_result){%>
+                <td><select name="scores" id="">
+                    <% for(var count=1; count<6; count++){ %>
+                        <option value="<%= count %>" <% if(count==5){%>  selected  <%}%> ><%= count %></option>
+                    <%}%>
+                </select></td>
+            <%}%>
+        </tr>
+        
     </table>
     
 
 
-    <form action="/basket/order/<%= basketId%>" method="post">
+    
         
         <table>
             <tr>
@@ -53,6 +63,9 @@
                         <option value="<%=adrData.adr_id%>">우편번호:<%= adrData.post_num%>  메인주소:<%= adrData.main_adr%>  상세주소:<%= adrData.detil_adr%></option>
                     <%}%>
                 </select></td>
+            </tr>
+            <tr>
+
             </tr>
         </table>
 

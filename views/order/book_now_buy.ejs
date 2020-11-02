@@ -35,6 +35,15 @@
 
         <table>
             <tr>
+                <td>점수: 
+                    <select name="book_score">
+                    <% for(var k=1; k<6; k++) {%>
+                        <option value="<%= k %>" <% if(k==5){%>  selected  <%}%> ><%= k %></option>
+                    <%}%>
+                    </select>
+            </td>
+            </tr>
+            <tr>
                 <td>수량: <select name="select_book_count" id="book_count" onchange="changeCount()">
                     <% for(let bookdata of bookResult){ %>
                         <%for(var i=1; i<=bookdata.book_stock; i++){%>
