@@ -59,6 +59,11 @@
                 <td>우편번호: <%= data2.order_post_num%></td><td>메인주소: <%= data2.order_main_adr%>&nbsp;&nbsp;</td><td>상세주소: <%= data2.order_detail_adr%></td>
             </tr>
         <%}%>
+        <tr>
+            <% for(var data45 of dis_result){%>
+                <td>쿠폰번호:<%= data45.coupon_id%></td><td>할인된금액: <%= data45.discount_money%></td>
+            <%}%>
+        </tr>
 
     </table>
 

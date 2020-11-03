@@ -23,6 +23,7 @@
   <br>
   <br>
   <a href="/mypage">마이페이지&nbsp;&nbsp;</a><a href="/basket">장바구니</a>
+  <a href="/coupon/create">쿠폰발급받기</a>
   <p><%= name %></p>
   <%} else{%>
   <br>
@@ -49,7 +50,7 @@
       <td><img src="./book_img/<%= data.book_img_path%>" alt="" width="100" height="100"></td>
       <td>책이름:<%= data.book_name%></td>
       <td>가격:<%= data.book_price%></td>
-      <td>평점:<%= (data.book_score).toFixed(2)%></td>
+      <!-- <td>평점:<%= (data.book_score).toFixed(2)%></td> -->
       <% if(session) { %>
       <% if(data.book_stock <=0){%>
         <td><h1>품절</h1></td>

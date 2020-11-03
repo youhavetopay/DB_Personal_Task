@@ -392,6 +392,10 @@ router.post('/order/:basketId', function (req, res, next) {
     var cardNum = body.select_card;
     var adrInfo = body.select_adr;
 
+    var coupon = body.coupon;
+
+    console.log(coupon);
+
     var nowTime = moment().format('YYYY-MM-DD HH:mm');
 
     // 선택한 카드정보랑 배송지 정보가져오기
@@ -442,18 +446,18 @@ router.post('/order/:basketId', function (req, res, next) {
                         // order_list 테이블에 insert
                         var discount = 1
                         var dis_p = 0;
-                        if (req.session.user.grade > 100000 && req.session.user.grade <= 200000) {
-                            discount = 0.8;
-                            dis_p = 20;
-                        }
-                        else if (req.session.user.grade > 200000 && req.session.user.grade < 300000) {
-                            discount = 0.7;
-                            dis_p = 30;
-                        }
-                        else if (req.session.user.grade >= 300000) {
-                            discount = 0.5;
-                            dis_p = 50;
-                        }
+                        // if (req.session.user.grade > 100000 && req.session.user.grade <= 200000) {
+                        //     discount = 0.8;
+                        //     dis_p = 20;
+                        // }
+                        // else if (req.session.user.grade > 200000 && req.session.user.grade < 300000) {
+                        //     discount = 0.7;
+                        //     dis_p = 30;
+                        // }
+                        // else if (req.session.user.grade >= 300000) {
+                        //     discount = 0.5;
+                        //     dis_p = 50;
+                        // }
                         console.log('할인률 ' + dis_p)
                         client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?,?,?)', [
                             null, userId, nowTime, total_money * discount, user_info[0].card_kind, user_info[0].card_num, user_info[0].card_valldity, user_info[0].post_num, user_info[0].main_adr, user_info[0].detil_adr,
@@ -478,8 +482,9 @@ router.post('/order/:basketId', function (req, res, next) {
                                             // 주문 상세정보에 책 정보 넣기
                                             for (var i = 0; i < booK_info.length; i++) {
                                                 console.log('책 길이 '+booK_info.length);
-                                                client.query('insert into order_list_has_book_list values(?,?,?,?)', [
-                                                    order_id[0].order_id, booK_info[i].book_list_book_id, booK_info[i].book_count, req.body.scores[i]
+                                                // req.body.scores[i]
+                                                client.query('insert into order_list_has_book_list values(?,?,?,null)', [
+                                                    order_id[0].order_id, booK_info[i].book_list_book_id, booK_info[i].book_count
                                                 ], function (err) {
                                                     if (err) {
                                                         console.log('쿼리 오류4');
@@ -492,8 +497,10 @@ router.post('/order/:basketId', function (req, res, next) {
                                                 })
                                                 // 책 주문한 만큼 재고량 빼기
                                                 console.log("재고량 업데이트1 "+i);
-                                                client.query('update book_list set book_stock = ?, book_score = (select avg(user_give_score) from order_list_has_book_list where book_list_book_id = ? ) where book_id = ?', [
-                                                    booK_info[i].book_stock - booK_info[i].book_count, booK_info[i].book_list_book_id,booK_info[i].book_list_book_id
+                                                // booK_info[i].book_list_book_id,
+                                                // book_score = (select avg(user_give_score) from order_list_has_book_list where book_list_book_id = ? )
+                                                client.query('update book_list set book_stock = ? where book_id = ?', [
+                                                    booK_info[i].book_stock - booK_info[i].book_count, booK_info[i].book_list_book_id
                                                 ], function (err) {
                                                     if (err) {
                                                         console.log('쿼리 오류5');

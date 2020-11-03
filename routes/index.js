@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const mysql = require('mysql');
+var moment = require('moment');
+require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
 
 /* let client = mysql.createConnection({
   user: 'root',
@@ -42,6 +45,10 @@ router.get('/', function (req, res, next) {
           }
           else {
             client.query('select user_give_score from order_list_has_book_list where book_list_book_id ')
+            console.log(total_money[0].total_money);
+
+            req.session.user.grade = total_money[0].total_money;
+            console.log(req.session.user.grade);
             res.render('index', { title: 'IZ*LAND 서점', session: true, result: result, name: req.session.user.name });
           }
         })
@@ -93,6 +100,7 @@ router.post('/search', function (req, res) {
 
 // 회원가입 렌더링
 router.get('/create', function (req, res, next) {
+  
   client.query("SELECT * FROM db.user;", function (err, result, fields) {
     if (err) {
       console.log(err);
@@ -106,6 +114,64 @@ router.get('/create', function (req, res, next) {
   });
 });
 
+
+//쿠폰
+router.get('/coupon/create', function(req, res){
+  var userId = req.session.user.id;
+  client.query('select * from coupon where user_user_id = ? and use_YN =?',[
+    userId, 'N'
+  ],function(err, coupon_result){
+    if(err){
+      console.log(err)
+
+    }
+    else{
+      res.render('coupon', {result:coupon_result});
+    }
+  })
+  
+})
+
+router.post('/coupon/create', function(req, res){
+  var userId = req.session.user.id;
+  var body = req.body;
+  var nowTime = moment().format('YYYY-MM-DD HH:mm');
+  var nowTime = moment().format('YYYY-MM-DD HH:mm');
+  if(body.w){
+    client.query('insert into coupon values(null,?, ?,?,null, ? ,?,null, null)',[
+      1000, userId, 'N','1000원할인쿠폰',nowTime
+    ], function(err){
+      if(err){
+        console.log(err);
+      }
+      else{
+        res.send(
+          `<script type="text/javascript">
+          alert("발급완료"); 
+          location.href='/';
+          </script>`
+        );
+      }
+    })
+  }
+  else if(body.p){
+    client.query('insert into coupon values(null,null, ?,?,?,?,?,null, null)',[
+       userId, 'N',0.9,'10퍼센트할인',nowTime
+    ], function(err){
+      if(err){
+        console.log(err);
+      }
+      else{
+        res.send(
+          `<script type="text/javascript">
+          alert("발급완료"); 
+          location.href='/';
+          </script>`
+        );
+      }
+    })
+  }
+})
 
 // 회원가입
 router.post('/create', function (req, res, next) {

@@ -398,13 +398,18 @@ router.get('/order_detail/:orderId', function (req, res, next) {
                   res.redirect('/mypage');
                 }
                 else {
-                
-                  res.render('order/orderDetail', {
-                    result_order: result_order,
-                    result_book_img: result_book_img,
-                    result_book_code: result_book_count,
-                    total_book_count: total_count[0].total_book_count,
-                  });
+                  client.query('select * from order_list_has_book_list where order_list_order_id =? ',[
+                    orderId
+                  ], function(err, dis_result){
+                    res.render('order/orderDetail', {
+                      result_order: result_order,
+                      result_book_img: result_book_img,
+                      result_book_code: result_book_count,
+                      total_book_count: total_count[0].total_book_count,
+                      dis_result:dis_result
+                    });
+                  })
+                  
                 }
               });
             }

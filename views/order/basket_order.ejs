@@ -17,6 +17,7 @@
 
         <tr><% for(let bookdata of book_result){%>
             <td>책이름: <%= bookdata.book_name%></td>
+            
             <%}%>
         </tr>
 
@@ -34,13 +35,18 @@
         </tr>
         <tr>
             <% for(let bookdata of book_result){%>
+            <td><input type="text" name="coupon"></td>
+            <%}%>
+        </tr>
+        <!-- <tr>
+            <% for(let bookdata of book_result){%>
                 <td><select name="scores" id="">
                     <% for(var count=1; count<6; count++){ %>
                         <option value="<%= count %>" <% if(count==5){%>  selected  <%}%> ><%= count %></option>
                     <%}%>
                 </select></td>
             <%}%>
-        </tr>
+        </tr> -->
         
     </table>
     

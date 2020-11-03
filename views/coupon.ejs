@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/coupon/create" method="POST">
+        
+        <input type="submit" value="10퍼센트 발급받기" name="p">
+        <input type="submit" value="1000원 발급받기" name="w">
+    </form>
+    <table>
+        <% for(var data2 of result){ %>
+
+            <tr>
+                <td>쿠폰명 <%= data2.coupon_name%></td>
+            </tr>
+            <tr>
+                <td>쿠폰번호 <%= data2.coupon_id%></td>
+            </tr>
+            <tr>
+                <td>발급일 <%= data2.create_day%></td>
+            </tr>
+            <tr>
+                <td>마감일 <%= data2.last_use_day%></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+            </tr>
+        <%}%>
+    </table>
+</body>
+</html>

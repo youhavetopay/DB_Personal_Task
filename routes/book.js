@@ -140,6 +140,8 @@ router.post('/order/:book_id/:book_price/:book_count', function (req, res, next)
     var bookPrice = req.params.book_price;
     var book_count = req.params.book_count;
 
+    var coupon_num = req.body.coupon_num;
+
     var body = req.body;
     var userId = req.session.user.id;
     var nowTime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -148,113 +150,205 @@ router.post('/order/:book_id/:book_price/:book_count', function (req, res, next)
     console.log('카드' + body.select_card)
     console.log('주소' + body.select_adr)
 
-    if (body.select_book_count == undefined || body.select_card == undefined || body.select_adr == undefined) {
-        console.log('하나 빼 먹음');
-        res.redirect('/');
-    }
-    else {
-        if (book_count <= 0) {  // 재고량 없으면 주문 안됨
-            console.log("재고없음")
-            res.redirect('/');
+    client.query('select * from coupon where coupon_id = ? and use_YN = ?',[
+        coupon_num,'N' 
+    ], function(err, coupon_result){
+        if(err){
+            console.log(err);
         }
-        else {
-            var totalPrice = bookPrice * body.select_book_count;
-
-
-
-            // 드롭박스에서 가져온 카드정보 가져오기
-            client.query('select * from card_info where card_num = ?', [
-                body.select_card
-            ], function (err, result_card, field) {
-                if (err) {
-                    console.log(err);
+        else{
+            
+            if(coupon_result[0] != undefined){
+                if (body.select_book_count == undefined || body.select_card == undefined || body.select_adr == undefined) {
+                    console.log('하나 빼 먹음');
                     res.redirect('/');
                 }
                 else {
-                    // 드롭박스에서 가져온 배송지 정보 가져오기
-                    client.query('select * from address_info where adr_id = ?', [
-                        body.select_adr
-                    ], function (err, result_adr, field) {
-                        if (err) {
-                            console.log(err);
-                            res.redirect('/');
-                        }
-                        else {
-                            var discount = 1
-                            var dis_p = 0;
-                            if (req.session.user.grade > 100000 && req.session.user.grade <= 200000) {
-                                discount = 0.8;
-                                dis_p = 20;
+                    if (book_count <= 0) {  // 재고량 없으면 주문 안됨
+                        console.log("재고없음")
+                        res.redirect('/');
+                    }
+                    else {
+                        var totalPrice = bookPrice * body.select_book_count;
+            
+            
+            
+                        // 드롭박스에서 가져온 카드정보 가져오기
+                        client.query('select * from card_info where card_num = ?', [
+                            body.select_card
+                        ], function (err, result_card, field) {
+                            if (err) {
+                                console.log(err);
+                                res.redirect('/');
                             }
-                            else if (req.session.user.grade > 200000 && req.session.user.grade < 300000) {
-                                discount = 0.7;
-                                dis_p = 30;
-                            }
-                            else if (req.session.user.grade >= 300000) {
-                                discount = 0.5;
-                                dis_p = 50;
-                            }
-
-                            console.log('할인률 '+dis_p)
-
-                            // order_list테이블에 값 넣기 
-                            client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?,?,?);', [
-                                null, userId, nowTime, totalPrice*discount, result_card[0].card_kind, result_card[0].card_num, result_card[0].card_valldity, result_adr[0].post_num, result_adr[0].main_adr, result_adr[0].detil_adr,
-                                totalPrice,dis_p
-                            ], function (err) {
-                                if (err) {
-                                    console.log(err);
-                                    res.redirect('/');
-                                }
-                                else {
-                                    // 가장 최근에 등록한 주문번호 가져오기
-                                    client.query('select max(order_id) as order_id from order_list;', function (err, result_select, field) {
-                                        if (err) {
-                                            console.log(err);
-                                            res.redirect('/');
+                            else {
+                                // 드롭박스에서 가져온 배송지 정보 가져오기
+                                client.query('select * from address_info where adr_id = ?', [
+                                    body.select_adr
+                                ], function (err, result_adr, field) {
+                                    if (err) {
+                                        console.log(err);
+                                        res.redirect('/');
+                                    }
+                                    else {
+                                        var discount = 1
+                                        var dis_p = 0;
+                                        // if (req.session.user.grade > 100000 && req.session.user.grade <= 200000) {
+                                        //     discount = 0.8;
+                                        //     dis_p = 20;
+                                        // }
+                                        // else if (req.session.user.grade > 200000 && req.session.user.grade < 300000) {
+                                        //     discount = 0.7;
+                                        //     dis_p = 30;
+                                        // }
+                                        // else if (req.session.user.grade >= 300000) {
+                                        //     discount = 0.5;
+                                        //     dis_p = 50;
+                                        // }
+                                        var dis = 0
+                                        var dis2;
+                                        console.log(coupon_result[0]);
+                                        if(coupon_result[0].discount_money_m == null){
+                                            dis2 = coupon_result[0].discount_money_P;
+                                            console.log('할인  '+dis2);
+                                            
                                         }
                                         else {
-                                            // 주문도서목록에 값 넣기
-                                            client.query('insert into order_list_has_book_list values(?, ? ,?, ?)', [
-                                                result_select[0].order_id, bookId, body.select_book_count, req.body.book_score
-                                            ], function (err) {
-                                                if (err) {
-                                                    console.log(err);
-                                                    res.redirect('/');
-                                                }
-                                                else {
-                                                    var new_book_count = book_count - body.select_book_count;
-                                                    // 주문한 도서 권수 만큼 도서 재고량 빼기
-                                                    client.query('update book_list set book_stock = ?, book_score = (select avg(user_give_score) from order_list_has_book_list where book_list_book_id =? ) where book_id = ?', [
-                                                        new_book_count, bookId,bookId
-                                                    ], function (err) {
-                                                        if (err) {
-                                                            console.log(err);
-                                                            res.redirect('/');
-                                                        }
-                                                        else {
-
-                                                    
-                                                            res.send(
-                                                                `<script type="text/javascript">
-                                                                alert("주문 완료"); 
-                                                                location.href='/';
-                                                                </script>`
-                                                            );
-                                                        }
-                                                    })
-                                                }
-                                            })
+                                            dis = coupon_result[0].discount_money_m;
+                                            console.log('할인  '+dis);
                                         }
-                                    })
-                                }
-                            })
-                        }
-                    });
+                            
+            
+                                        // order_list테이블에 값 넣기 
+                                        client.query('insert into order_list values(?,?,?,?,?,?,?,?,?,?,?,0);', [
+                                            null, userId, nowTime, totalPrice*discount, result_card[0].card_kind, result_card[0].card_num, result_card[0].card_valldity, result_adr[0].post_num, result_adr[0].main_adr, result_adr[0].detil_adr,
+                                            totalPrice
+                                        ], function (err) {
+                                            if (err) {
+                                                console.log(err);
+                                                res.redirect('/');
+                                            }
+                                            else {
+                                                // 가장 최근에 등록한 주문번호 가져오기
+                                                client.query('select max(order_id) as order_id from order_list;', function (err, result_select, field) {
+                                                    if (err) {
+                                                        console.log(err);
+                                                        res.redirect('/');
+                                                    }
+                                                    else {
+                                                        // 주문도서목록에 값 넣기
+                                                        // req.body.book_score
+                                                        // 책 가격 가져오기
+                                                        client.query('select * from book_list where book_id = ?',[
+                                                            parseInt(bookId)
+                                                        ], function(err, book_search_result){
+                                                            if(err){
+                                                                console.log(err);
+                                                            }
+                                                            else{
+                                                                if(dis>1){
+                                                                    client.query('insert into order_list_has_book_list values(?, ? ,?, null, ?,?)', [
+                                                                        result_select[0].order_id, bookId, body.select_book_count, coupon_num, book_search_result[0].book_price - dis
+                                                                    ], function (err) {
+                                                                        if (err) {
+                                                                            console.log(err);
+                                                                            res.redirect('/');
+                                                                        }
+                                                                        else {
+                                                                            var new_book_count = book_count - body.select_book_count;
+                                                                            // 주문한 도서 권수 만큼 도서 재고량 빼기
+                                                                            // book_score = (select avg(user_give_score) from order_list_has_book_list where book_list_book_id =? )
+                                                                            client.query('update book_list set book_stock = ? where book_id = ?', [
+                                                                                new_book_count,bookId
+                                                                            ], function (err) {
+                                                                                if (err) {
+                                                                                    console.log(err);
+                                                                                    res.redirect('/');
+                                                                                }
+                                                                                else {
+                                                                                    client.query('update coupon set use_YN = ?, user_day = ? where coupon_id = ?',[
+                                                                                        'Y',nowTime,coupon_num
+                                                                                    ], function(err){
+                                                                                        res.send(
+                                                                                            `<script type="text/javascript">
+                                                                                            alert("주문 완료"); 
+                                                                                            location.href='/';
+                                                                                            </script>`
+                                                                                        );
+                                                                                    })
+                                                                            
+                                                                                    
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    })
+                                                                }
+                                                                else{
+                                                                    client.query('insert into order_list_has_book_list values(?, ? ,?, null, ?,?)', [
+                                                                        result_select[0].order_id, bookId, body.select_book_count, coupon_num, book_search_result[0].book_price * dis2
+                                                                    ], function (err) {
+                                                                        if (err) {
+                                                                            console.log(err);
+                                                                            res.redirect('/');
+                                                                        }
+                                                                        else {
+                                                                            var new_book_count = book_count - body.select_book_count;
+                                                                            // 주문한 도서 권수 만큼 도서 재고량 빼기
+                                                                            // book_score = (select avg(user_give_score) from order_list_has_book_list where book_list_book_id =? )
+                                                                            client.query('update book_list set book_stock = ? where book_id = ?', [
+                                                                                new_book_count,bookId
+                                                                            ], function (err) {
+                                                                                if (err) {
+                                                                                    console.log(err);
+                                                                                    res.redirect('/');
+                                                                                }
+                                                                                else {
+                        
+                                                
+                                                                                    client.query('update coupon set use_YN = ?, user_day =? where coupon_id = ?',[
+                                                                                        'Y', nowTime,coupon_num
+                                                                                    ], function(err){
+                                                                                        res.send(
+                                                                                            `<script type="text/javascript">
+                                                                                            alert("주문 완료"); 
+                                                                                            location.href='/';
+                                                                                            </script>`
+                                                                                        );
+                                                                                    })
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                    })
+                                                                }
+                                                                
+                                                            }
+                                                        })
+                                                        
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    }
+                                });
+                            }
+                        })
+                    }
                 }
-            })
+            }
+            else{
+                console.log('쿠폰번호 X');
+                
+                res.send(
+                    `<script type="text/javascript">
+                    alert("쿠폰번호 틀림"); 
+                    location.href='/';
+                    </script>`
+                );
+            }
         }
-    }
+    })
+
+    
 
 
 })
